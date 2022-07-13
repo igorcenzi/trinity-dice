@@ -1,17 +1,16 @@
 from rest_framework import generics
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from classes.models import Class
-from classes.permissions import isMasterOrAdmin
+from classes.permissions import isMasterOrAdminOrReadOnly
 from classes.serializers import ClassesSerializer
 
 
 class ListCreateClassView(
     generics.ListCreateAPIView,
 ):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [isMasterOrAdmin]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [isMasterOrAdminOrReadOnly]
 
     queryset = Class.objects.all()
     serializer_class = ClassesSerializer
@@ -20,8 +19,8 @@ class ListCreateClassView(
 class GetDeleteClassView(
     generics.RetrieveDestroyAPIView,
 ):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [isMasterOrAdmin]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [isMasterOrAdminOrReadOnly]
 
     queryset = Class.objects.all()
     serializer_class = ClassesSerializer
