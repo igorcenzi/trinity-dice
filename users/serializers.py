@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
   
   def update(self, instance: User, validated_data: dict) -> User:
     password = False
-    if validated_data['is_master']:
+    if 'is_master' in validated_data:
       raise ValidationError({
    "detail": "Can't edit field is_master" 
  })
