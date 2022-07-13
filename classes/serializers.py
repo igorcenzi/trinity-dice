@@ -7,3 +7,4 @@ class ClassesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Class
         fields = "__all__"
+        read_only_fields = ["id"]
