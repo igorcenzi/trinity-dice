@@ -22,6 +22,7 @@ class UserModelTest(TestCase):
   def test_should_create_user(self):
     self.assertTrue(hasattr(self.user, 'id'))
     self.assertTrue(hasattr(self.user, 'username'))
+    self.assertTrue(hasattr(self.user, 'password'))
     self.assertTrue(hasattr(self.user, 'email'))
     self.assertTrue(hasattr(self.user, 'phone'))
     self.assertTrue(hasattr(self.user, 'is_master'))
