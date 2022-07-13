@@ -8,7 +8,8 @@ class TypeOptions(models.TextChoices):
 
 class Bonus(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
-    value = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
+    name = models.CharField(max_length=50)
+    precision = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
     type = models.CharField(max_length=50, choices=TypeOptions.choices, default=TypeOptions.BUFF)
 
     
