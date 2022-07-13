@@ -27,5 +27,15 @@ class Item(models.Model):
     precision = models.IntegerField()
     min_level = models.IntegerField()
 
-    original_system = models.CharField(max_length=50)
+    """
+    original_system = models.ForeignKey(
+        'systems.System', on_delete=models.CASCADE, related_name='system'
+    )
+    inventories = models.ManyToManyField(
+       'inventories.Inventory', related_name='inventories'
+    )
+    classes = models.ManyToManyField(
+       'classes.Class', related_name='classes'
+    )
+    """
 
