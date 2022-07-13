@@ -31,8 +31,8 @@ class Item(models.Model):
     original_system = models.ForeignKey(
         'systems.System', on_delete=models.CASCADE, related_name='system'
     )
-    inventories = models.ManyToManyField(
-       'inventories.Inventory', related_name='inventories'
+    characters = models.ManyToManyField(
+       'characters.Character', related_name='character'
     )
     classes = models.ManyToManyField(
        'classes.Class', related_name='classes'
