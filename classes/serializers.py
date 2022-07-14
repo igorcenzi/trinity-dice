@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from classes.models import Class
 
+# from systems.serializers import SystemSerializer
+
 
 class ClassesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,7 +12,9 @@ class ClassesSerializer(serializers.ModelSerializer):
         read_only_fields = ["id"]
 
 
-class ClassCreateGetSerializer(serializers.ModelSerializer):
+class ListSerializer(serializers.ModelSerializer):
+    # system = SystemSerializer(read_only=True)
+
     class Meta:
         model = Class
         fields = "__all__"
