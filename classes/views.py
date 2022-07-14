@@ -15,6 +15,9 @@ class ListCreateClassView(
     queryset = Class.objects.all()
     serializer_class = ClassCreateGetSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(system=self.request.data)
+
 
 class GetDeleteClassView(
     generics.RetrieveDestroyAPIView,
