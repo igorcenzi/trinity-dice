@@ -1,7 +1,7 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveDestroyAPIView, UpdateAPIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .permissions import ItemPermissions
+from trinity_dice.permissions import MasterPermissions
 from .serializers import ItemSerializer
 from .models import Item
 from django.shortcuts import get_object_or_404
@@ -9,18 +9,16 @@ from bonus.models import Bonus
 from bonus.serializers import BonusSerializer
 
 class ListCreateItemsView(ListCreateAPIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [ItemPermissions]
-
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
+
+    permission_classes = [MasterPermissions]
 
 class RetrieveDestroyItemsView(RetrieveDestroyAPIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [ItemPermissions]
-
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
+
+    permission_classes = [MasterPermissions]
 
 class ApplyBonusView(UpdateAPIView):
     queryset = Item.objects.all()

@@ -2,14 +2,14 @@ from django.db import models
 
 
 class ItemType(models.TextChoices):
-    WEAPON = ("WP", "Weapon")
-    ARMOR = ("AM", "Armor")
-    ARTIFACT = ("AR", "Artifact")
+    WEAPON = ("Weapon")
+    ARMOR = ("Armor")
+    ARTIFACT = ("Artifact")
 
 class ItemRarity(models.TextChoices):
-    COMMON = ("CM", "Common")
-    UNCOMMON = ("UC", "Uncommon")
-    RARE = ("RR", "Rare")
+    COMMON = ("Common")
+    UNCOMMON = ("Uncommon")
+    RARE = ("Rare")
 
 class Item(models.Model):
     name = models.CharField(max_length=50)
