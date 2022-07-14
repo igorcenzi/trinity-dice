@@ -3,7 +3,7 @@ from .views import ListCreateItemsView, RetrieveDestroyItemsView
 
 
 urlpatterns = [
-    path('', ListCreateItemsView.as_view()),
-    path('<str:pk>/', RetrieveDestroyItemsView.as_view()),
+    path('items/', ListCreateItemsView.as_view()),
+    path('items/<str:pk>/', RetrieveDestroyItemsView.as_view()),
 ]
 
