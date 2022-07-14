@@ -2,9 +2,6 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
-./journeys/migrations
-
 # C extensions
 *.so
 
