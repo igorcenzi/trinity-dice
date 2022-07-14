@@ -8,3 +8,10 @@ class ClassesSerializer(serializers.ModelSerializer):
         model = Class
         fields = "__all__"
         read_only_fields = ["id"]
+
+
+class ClassCreateGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Class
+        fields = "__all__"
+        read_only_fields = ["id", "system"]

@@ -3,7 +3,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from classes.models import Class
 from classes.permissions import isMasterOrAdminOrReadOnly
-from classes.serializers import ClassesSerializer
+from classes.serializers import ClassCreateGetSerializer, ClassesSerializer
 
 
 class ListCreateClassView(
@@ -13,7 +13,7 @@ class ListCreateClassView(
     permission_classes = [isMasterOrAdminOrReadOnly]
 
     queryset = Class.objects.all()
-    serializer_class = ClassesSerializer
+    serializer_class = ClassCreateGetSerializer
 
 
 class GetDeleteClassView(
