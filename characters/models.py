@@ -25,6 +25,6 @@ class Character(models.Model):
     max_exp_points = models.IntegerField()
     level_up_points = models.IntegerField()
     level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
-    class_id = models.ForeignKey("classes.Class", on_delete=models.CASCADE, related_name="characters")
-    journey_id = models.ForeignKey("journeys.Journey", on_delete=models.CASCADE, related_name="characters")
+    # class_id = models.ForeignKey("classes.Class", on_delete=models.CASCADE, related_name="characters")
+    # journey_id = models.ForeignKey("journeys.Journey", on_delete=models.CASCADE, related_name="characters")
     user_id = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="characters")
