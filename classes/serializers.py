@@ -12,7 +12,7 @@ class ClassesSerializer(serializers.ModelSerializer):
         read_only_fields = ["id"]
 
 
-class ListSerializer(serializers.ModelSerializer):
+class ClassListSerializer(serializers.ModelSerializer):
     # system = SystemSerializer(read_only=True)
 
     class Meta:
