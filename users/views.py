@@ -1,8 +1,9 @@
 from rest_framework import generics
 from users.serializers import UserSerializer
 from .models import User
-from .permissions import AdminPermissions, UserOrAdminPermissions
-# Create your views here.
+from trinity_dice.permissions import AdminPermissions, UserOrAdminPermissions
+
+
 class ListCreateUserView(generics.ListCreateAPIView):
   queryset = User.objects.all()
   serializer_class = UserSerializer
