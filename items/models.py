@@ -29,13 +29,16 @@ class Item(models.Model):
 
     """
     original_system = models.ForeignKey(
-        'systems.System', on_delete=models.CASCADE, related_name='system'
+        'systems.System', on_delete=models.CASCADE, related_name='items'
     )
     characters = models.ManyToManyField(
-       'characters.Character', related_name='character'
+       'characters.Character', related_name='inventories'
     )
     classes = models.ManyToManyField(
-       'classes.Class', related_name='classes'
+       'classes.Class', related_name='items'
+    )
+    bonus = models.ManyToManyField(
+       'bonus.Bonus', related_name='items'
     )
     """
 
