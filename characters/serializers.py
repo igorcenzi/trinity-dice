@@ -1,3 +1,4 @@
+from asyncore import read
 from rest_framework import serializers
 
 from classes.models import Class
@@ -5,6 +6,7 @@ from classes.models import Class
 from .models import Character
 
 from journeys.models import Journey
+from classes.models import Class
 
 
 class JourneyTitleSerializer(serializers.ModelSerializer):
@@ -13,24 +15,20 @@ class JourneyTitleSerializer(serializers.ModelSerializer):
         fields = ["title"]
 
 
-class ClassNameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Class
-        fields = ["name"]
-
 
 class CharacterListCreateSerializer(serializers.ModelSerializer):
     journey = JourneyTitleSerializer(read_only=True)
 
     classes = serializers.CharField(max_length=50, write_only=True)
 
-    class_name = ClassNameSerializer(read_only=True)
+    class_name= serializers.SerializerMethodField(read_only=True)
 
     creator_id = serializers.PrimaryKeyRelatedField(source="user_id", read_only=True)
 
     class Meta:
         model = Character
         fields = [
+            "id",
             "name",
             "birth_place",
             "race",
@@ -61,7 +59,11 @@ class CharacterListCreateSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data: dict):
-        print()
         class_data = validated_data.pop("classes")
         class_obj, _ = Class.objects.get_or_create(name=class_data)
         return Character.objects.create(**validated_data, class_name=class_obj)
+
+    def get_class_name(self, obj):
+        id = obj.__dict__.get('class_name_id')
+        classes = Class.objects.get(pk=id)
+        return classes.name

@@ -78,18 +78,7 @@ WSGI_APPLICATION = "trinity_dice.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": os.getenv("POSTGRES_DB"),
-#         "USER": os.getenv("POSTGRES_USER"),
-#         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-#         "HOST": "db",
-#         "PORT": 5432,
-#     }
-# }
 
-# LOCAL POSTGRES CONFIG
 
 DATABASES = {
     "default": {
@@ -97,10 +86,23 @@ DATABASES = {
         "NAME": os.getenv("POSTGRES_DB"),
         "USER": os.getenv("POSTGRES_USER"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-        "HOST": "localhost",
+        "HOST": "db",
         "PORT": 5432,
     }
 }
+
+# LOCAL POSTGRES CONFIG
+
+    # DATABASES = {
+    #     "default": {
+    #         "ENGINE": "django.db.backends.postgresql",
+    #         "NAME": os.getenv("POSTGRES_DB"),
+    #         "USER": os.getenv("POSTGRES_USER"),
+    #         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+    #         "HOST": "localhost",
+    #         "PORT": 5432,
+    #     }
+    # }
 
 # DATABASE_URL = os.environ.get("DATABASE_URL")
 
