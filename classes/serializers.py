@@ -10,14 +10,6 @@ class SystemNameSerializer(serializers.ModelSerializer):
         model = System
         fields = ["name"]
 
-
-class ClassesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Class
-        fields = "__all__"
-        read_only_fields = ["id"]
-
-
 class ClassListSerializer(serializers.ModelSerializer):
     system = SystemNameSerializer(read_only=True)
 
