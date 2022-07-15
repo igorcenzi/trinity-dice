@@ -2,7 +2,7 @@ from rest_framework import generics
 
 from .models import Class
 from trinity_dice.permissions import MasterPermissions
-from .serializers import ClassesSerializer, ClassListSerializer
+from .serializers import ClassListSerializer
 
 
 # class ListClassView(APIView):
@@ -31,4 +31,4 @@ class GetDeleteClassView(generics.RetrieveDestroyAPIView):
     permission_classes = [MasterPermissions]
 
     queryset = Class.objects.all()
-    serializer_class = ClassesSerializer
+    serializer_class = ClassListSerializer
