@@ -1,6 +1,8 @@
 from django.db import models
+import uuid
 
 class Journey(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=50)
     description = models.TextField(max_length=255)
     min_level = models.IntegerField()
@@ -10,6 +12,6 @@ class Journey(models.Model):
     status = models.CharField(max_length=50, default="created")
     started_at = models.CharField(max_length=255, null=True)
     ended_at = models.CharField(max_length=255, null=True)
-    system_name = models.ForeignKey("systems.System", on_delete=models.CASCADE, related_name="journeys")
-    creator_id = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="journeys")
+    system = models.ForeignKey("systems.System", on_delete=models.CASCADE, related_name="journeys")
+    creator = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="journeys")
 

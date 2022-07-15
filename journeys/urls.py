@@ -1,6 +1,6 @@
-from django import path
+from django.urls import path
 from .views import ListCreateJourneyView
 
 urlpatterns = [
-    path()
+    path('systems/<str:system_id>/', ListCreateJourneyView.as_view())
 ]
