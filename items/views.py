@@ -1,28 +1,47 @@
-from rest_framework.generics import ListCreateAPIView, RetrieveDestroyAPIView, UpdateAPIView
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.generics import (
+    ListCreateAPIView, RetrieveDestroyAPIView, UpdateAPIView
+)
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 from trinity_dice.permissions import MasterPermissions
-from .serializers import ItemSerializer
+from .serializers import ItemPostSerializer, ItemGetSerializer
 from .models import Item
-from django.shortcuts import get_object_or_404
+from systems.models import System
 from bonus.models import Bonus
 from bonus.serializers import BonusSerializer
+from utils.mixins import SerializerByMethodMixin
 
-class ListCreateItemsView(ListCreateAPIView):
-    queryset = Item.objects.all()
-    serializer_class = ItemSerializer
 
+class ListCreateItemsView(
+    SerializerByMethodMixin,
+    ListCreateAPIView,
+    PageNumberPagination
+):
     permission_classes = [MasterPermissions]
+    serializer_map = {
+        'GET': ItemGetSerializer,
+        'POST': ItemPostSerializer,
+    }
+
+    def perform_create(self, serializer):
+        system = get_object_or_404(System, pk=self.kwargs['system_id'])
+        serializer.save(system=system)
+
+    def get_queryset(self):
+        system = get_object_or_404(System, pk=self.kwargs['system_id'])
+        return Item.objects.filter(system=system)
 
 class RetrieveDestroyItemsView(RetrieveDestroyAPIView):
     queryset = Item.objects.all()
-    serializer_class = ItemSerializer
+    serializer_class = ItemPostSerializer
 
     permission_classes = [MasterPermissions]
 
 class ApplyBonusView(UpdateAPIView):
     queryset = Item.objects.all()
-    serializer_class = ItemSerializer
+    serializer_class = ItemPostSerializer
 
     def perform_update(self, serializer):
         bonus_id = self.kwargs["bonus_id"]
@@ -31,7 +50,7 @@ class ApplyBonusView(UpdateAPIView):
 
 class RemoveBonusView(UpdateAPIView):
     queryset = Item.objects.all()
-    serializer_class = ItemSerializer
+    serializer_class = ItemPostSerializer
 
     def perform_update(self, serializer):
         bonus_id = self.kwargs["bonus_id"]
