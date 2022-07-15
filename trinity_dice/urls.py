@@ -10,5 +10,6 @@ urlpatterns = [
     path("items/", include("items.urls")),
     path("systems/", include("systems.urls")),
     path("classes/", include("classes.urls")),
+    path("characters/", include("characters.urls")),
     path("login/", TokenObtainPairView.as_view()),
 ]
