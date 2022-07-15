@@ -1,0 +1,5 @@
+build:
+  docker:
+    api: Dockerfile
+run:
+  api: python manage.py runserver 0.0.0.0:$PORT
