@@ -27,18 +27,12 @@ class Item(models.Model):
     precision = models.IntegerField()
     min_level = models.IntegerField()
 
-    """
-    original_system = models.ForeignKey(
+    system = models.ForeignKey(
         'systems.System', on_delete=models.CASCADE, related_name='items'
     )
     characters = models.ManyToManyField(
        'characters.Character', related_name='inventories'
     )
-    classes = models.ManyToManyField(
-       'classes.Class', related_name='items'
-    )
-    bonus = models.ManyToManyField(
-       'bonus.Bonus', related_name='items'
-    )
-    """
+    classes = models.ManyToManyField('classes.Class', related_name='items')
+    bonus = models.ManyToManyField('bonus.Bonus', related_name='items')
 
