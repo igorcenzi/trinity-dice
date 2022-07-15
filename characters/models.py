@@ -1,12 +1,15 @@
+import uuid
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+
 class StatusOptions(models.TextChoices):
-    HT = ('healthy',)
-    DD = ('dead',)
+    HT = ("Healthy",)
+    DD = ("Dead",)
 
 
 class Character(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=50)
     birth_place = models.CharField(max_length=50)
     race = models.CharField(max_length=50)
@@ -15,16 +18,24 @@ class Character(models.Model):
     health_points = models.IntegerField()
     status = models.CharField(max_length=50, choices=StatusOptions.choices)
     mana_points = models.IntegerField()
-    inteligence_points = models.IntegerField()
+    intelligence_points = models.IntegerField()
     strength_points = models.IntegerField()
     stamina_points = models.IntegerField()
     dexterity_points = models.IntegerField()
     attack_points = models.IntegerField()
     defense_points = models.IntegerField()
-    exp_points = models.IntegerField()
-    max_exp_points = models.IntegerField()
-    level_up_points = models.IntegerField()
-    level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
-    class_id = models.ForeignKey("classes.Class", on_delete=models.CASCADE, related_name="characters")
-    journey_id = models.ForeignKey("journeys.Journey", on_delete=models.CASCADE, related_name="characters")
-    user_id = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="characters")
+    exp_points = models.IntegerField(default=1)
+    max_exp_points = models.IntegerField(default=100)
+    level_up_points = models.IntegerField(default=0)
+    level = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(100)], default=1
+    )
+    class_name = models.ForeignKey(
+        "classes.Class", on_delete=models.CASCADE, related_name="characters"
+    )
+    journey = models.ForeignKey(
+        "journeys.Journey", on_delete=models.CASCADE, related_name="players", null=True
+    )
+    user = models.ForeignKey(
+        "users.User", on_delete=models.CASCADE, related_name="characters"
+    )
