@@ -6,6 +6,7 @@ from .models import Character
 from users.models import User
 from trinity_dice.permissions import IsCharOwnerOrReadOnlyPermissions, MasterPermissions, AllowToUpgradeChar
 from utils.mixins import SerializerByMethodMixin
+from .mixins import UpdateStatusMixin
 
 class ListCreateCharView(ListCreateAPIView):
     queryset = Character.objects.filter()
@@ -27,10 +28,10 @@ class CharDetailsView(SerializerByMethodMixin, RetrieveUpdateDestroyAPIView):
     }
     permission_classes = [IsCharOwnerOrReadOnlyPermissions]
 
-class AlterStatusView(UpdateAPIView):
+class AlterStatusView(UpdateStatusMixin, UpdateAPIView):
     queryset = Character.objects.all()
     serializer_class = AlterStatusSerializer
-    permission_classes = [MasterPermissions]    
+    permission_classes = [MasterPermissions] 
 
 class UpgradeCharView(UpdateAPIView):
     queryset = Character.objects.all()

@@ -11,7 +11,7 @@ class JourneyTitleSerializer(serializers.ModelSerializer):
 
 
 class AlterStatusSerializer(serializers.ModelSerializer):
-    journey = JourneyTitleSerializer(read_only=True)
+    # journey = JourneyTitleSerializer(read_only=True)
 
     # personalizar o update para retornar uma mensagem personalizada, i.e "detail": "{character.name} is dead!"
     class Meta:
