@@ -4,8 +4,8 @@ from .serializers import CharacterListCreateSerializer, AlterStatusSerializer, U
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView
 from .models import Character
 from users.models import User
-from trinity_dice.permissions import IsOwnerOrReadOnlyPermissions, MasterPermissions
-from .mixins import SerializeByMethodMixin
+from trinity_dice.permissions import IsCharOwnerOrReadOnlyPermissions, MasterPermissions
+from utils.mixins import SerializerByMethodMixin
 
 class ListCreateCharView(ListCreateAPIView):
     queryset = Character.objects.filter()
@@ -13,19 +13,19 @@ class ListCreateCharView(ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(creator=self.request.user)
     
     def get_queryset(self):
         owner = get_object_or_404(User, email=self.request.user)
-        return Character.objects.filter(user=owner)
+        return Character.objects.filter(creator=owner)
 
-class CharDetailsView(SerializeByMethodMixin, RetrieveUpdateDestroyAPIView):
+class CharDetailsView(SerializerByMethodMixin, RetrieveUpdateDestroyAPIView):
     queryset = Character.objects.all()
     serializer_map = {
         'PATCH': UpdateCharSerializer,
-        'GET':CharacterListCreateSerializer
+        'GET': CharacterListCreateSerializer
     }
-    permission_classes = [IsOwnerOrReadOnlyPermissions]
+    permission_classes = [IsCharOwnerOrReadOnlyPermissions]
 
 class AlterStatusView(UpdateAPIView):
     queryset = Character.objects.all()
@@ -53,7 +53,7 @@ class GainExpView(UpdateAPIView):
         new_exp = amount_exp + current_exp
 
         if new_exp >= max_exp:
-            max_exp = max_exp * 1.05
+            max_exp = max_exp * 1.10
             current_level += 1
             new_exp = 0
             points += 1
