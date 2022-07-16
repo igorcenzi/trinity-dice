@@ -4,7 +4,7 @@ from .serializers import CharacterListCreateSerializer, AlterStatusSerializer, U
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView
 from .models import Character
 from users.models import User
-from trinity_dice.permissions import IsCharOwnerOrReadOnlyPermissions, MasterPermissions
+from trinity_dice.permissions import IsCharOwnerOrReadOnlyPermissions, MasterPermissions, AllowToUpgradeChar
 from utils.mixins import SerializerByMethodMixin
 
 class ListCreateCharView(ListCreateAPIView):
@@ -35,7 +35,13 @@ class AlterStatusView(UpdateAPIView):
 class UpgradeCharView(UpdateAPIView):
     queryset = Character.objects.all()
     serializer_class = UpgradeCharSerializer
-    permission_classes = [MasterPermissions]
+    permission_classes = [MasterPermissions, AllowToUpgradeChar]
+    
+    def perform_update(self, serializer):
+        char_id = self.kwargs["pk"]
+        char = Character.objects.get(pk=char_id)
+        points = char.__dict__["level_up_points"] - 1
+        serializer.save(level_up_points=points)
 
 class GainExpView(UpdateAPIView): 
     queryset = Character.objects.all()
@@ -51,7 +57,6 @@ class GainExpView(UpdateAPIView):
         current_level = char.__dict__["level"]
         points = char.__dict__["level_up_points"]
         new_exp = amount_exp + current_exp
-
         if new_exp >= max_exp:
             max_exp = max_exp * 1.10
             current_level += 1

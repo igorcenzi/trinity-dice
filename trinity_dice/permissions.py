@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from rest_framework import exceptions
 
 
 class AdminPermissions(permissions.BasePermission):
@@ -25,3 +26,9 @@ class UserOrAdminPermissions(permissions.BasePermission):
         if request.user == obj or request.user.is_superuser:
             return True
         return False
+    
+class AllowToUpgradeChar(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if obj.level_up_points <= 0:
+            raise exceptions.PermissionDenied({"detail": "This character does not have enough points to upgrade."})
+        return obj.level_up_points > 0
