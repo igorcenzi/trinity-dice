@@ -1,10 +1,5 @@
-from asyncore import read
 from rest_framework import serializers
-
-from classes.models import Class
-
 from .models import Character
-
 from journeys.models import Journey
 from classes.models import Class
 
@@ -14,6 +9,30 @@ class JourneyTitleSerializer(serializers.ModelSerializer):
         model = Journey
         fields = ["title"]
 
+class AlterStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Character
+        fields = ["status"]
+        read_only_fields = ["id", "name", "birth_place", "age", "race", "description", "class", "level", "journey", "creator"]
+
+class ExperienceSerializer(serializers.ModelSerializer):
+    gained_exp = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = Character
+        fields = ["gained_exp", "id", "name", "birth_place", "age", "race", "description", "class_name", "level","level_up_points", "exp_points", "max_exp_points", "journey", "user"]
+        read_only_fields = ["id", "name", "birth_place", "age", "race", "description", "class_name", "level", "level_up_points", "exp_points", "max_exp_points", "journey", "user"]
+
+class UpdateCharSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Character
+        fields = ["name", "age", "description"]
+
+class UpgradeCharSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Character
+        fields = "__all__"
+        read_only_fields = ["id", "name", "birth_place", "race", "age", "description", "class", "status", "exp_points", "max_exp_points", "level_up_points" "level", "class", "journey", "creator"]
 
 
 class CharacterListCreateSerializer(serializers.ModelSerializer):
@@ -46,8 +65,8 @@ class CharacterListCreateSerializer(serializers.ModelSerializer):
             "max_exp_points",
             "level_up_points",
             "level",
-            "class_name",
             "classes",
+            "class_name",
             "journey",
             "creator_id",
         ]
@@ -55,7 +74,7 @@ class CharacterListCreateSerializer(serializers.ModelSerializer):
             "exp_points",
             "max_exp_points",
             "level_up_points",
-            "level",
+            "level"
         ]
 
     def create(self, validated_data: dict):
