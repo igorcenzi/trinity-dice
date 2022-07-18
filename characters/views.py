@@ -1,6 +1,9 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from .serializers import CharacterListCreateSerializer, AlterStatusSerializer, UpdateCharSerializer, UpgradeCharSerializer, ExperienceSerializer
+
+from .mixins import AddItemToInventoryMixin
+from items.models import Item
+from .serializers import CharacterListCreateSerializer, AlterStatusSerializer, UpdateCharSerializer, UpgradeCharSerializer, ExperienceSerializer, AddItemToInventorySerializer
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView
 from .models import Character
 from users.models import User
@@ -62,6 +65,15 @@ class GainExpView(UpdateAPIView):
         else:
             serializer.save(exp_points=new_exp)
 
-        
 
-
+class AddNewItemToInventoryView(AddItemToInventoryMixin, UpdateAPIView):
+    queryset = Character.objects.all()
+    serializer_class = AddItemToInventorySerializer
+    permission_classes = [MasterPermissions]
+    lookup_url_kwarg = 'char_id'
+    
+    def perform_update(self, serializer):
+        character = Character.objects.get(id=self.kwargs['char_id'])
+        item = Item.objects.get(id=self.kwargs['item_id'])
+        item.characters.add(character)
+        item.save()
