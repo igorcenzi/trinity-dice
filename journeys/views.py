@@ -10,7 +10,7 @@ from rest_framework.views import Response, status
 from trinity_dice.permissions import MasterAndOwnerPermissions, MasterPermissions
 from .models import Journey
 from datetime import datetime
-# from integrations.executor import integrate
+from integrations.executor import integrate
 
 class ListCreateJourneyView(SerializerByMethodMixin, ListCreateAPIView):
     permission_classes = [MasterPermissions]

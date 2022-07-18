@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.db import models
 import uuid
 
@@ -9,7 +10,7 @@ class Journey(models.Model):
     max_level = models.IntegerField()
     max_players = models.IntegerField()
     table_link = models.CharField(max_length=255)
-    status = models.CharField(max_length=50, default="created")
+    status = models.CharField(max_length=50, default="Created")
     started_at = models.CharField(max_length=255, null=True)
     ended_at = models.CharField(max_length=255, null=True)
     system = models.ForeignKey("systems.System", on_delete=models.CASCADE, related_name="journeys")

@@ -13,12 +13,11 @@ class MasterPermissions(permissions.BasePermission):
         return request.user.is_authenticated and request.user.is_master
 
 
-class UserPermissions(permissions.BasePermission):
+class IsCharOwnerOrReadOnlyPermissions(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        if request.user == obj:
+        if request.method in permissions.SAFE_METHODS:
             return True
-        return False
-
+        return request.user == obj.creator
 
 class UserOrAdminPermissions(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):

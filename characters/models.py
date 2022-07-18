@@ -15,8 +15,8 @@ class Character(models.Model):
     race = models.CharField(max_length=50)
     age = models.IntegerField(null=True)
     description = models.TextField(max_length=255)
-    health_points = models.IntegerField()
     status = models.CharField(max_length=50, choices=StatusOptions.choices)
+    health_points = models.IntegerField()
     mana_points = models.IntegerField()
     intelligence_points = models.IntegerField()
     strength_points = models.IntegerField()
@@ -36,6 +36,6 @@ class Character(models.Model):
     journey = models.ForeignKey(
         "journeys.Journey", on_delete=models.CASCADE, related_name="players", null=True
     )
-    user = models.ForeignKey(
+    creator = models.ForeignKey(
         "users.User", on_delete=models.CASCADE, related_name="characters"
     )
