@@ -25,7 +25,17 @@ class SystemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = System
-        fields = '__all__'
+        fields = [
+            "id",
+            "name",
+            "dice",
+            "version",
+            "journeys_amount",
+            "is_active",
+            "created_at",
+            "classes",
+            "items",
+        ]
 
     def create(self, validated_data: dict):
         class_data = validated_data.pop("classes")
@@ -38,5 +48,4 @@ class SystemSerializer(serializers.ModelSerializer):
         return system
 
     def get_journeys_amount(self, obj):
-       return Journey.objects.filter(system=obj.id).count()
-
+        return Journey.objects.filter(system=obj.id).count()
