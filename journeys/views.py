@@ -8,7 +8,7 @@ from trinity_dice.permissions import MasterAndOwnerPermissions, MasterPermission
 from .models import Journey
 from datetime import datetime
 from .mixins import AddCharToJourneyMixin, RemoveCharFromJourneyMixin
-# from integrations.executor import integrate
+from integrations.executor import integrate
 
 class ListCreateJourneyView(ListCreateAPIView):
     permission_classes = [MasterPermissions]
@@ -35,14 +35,13 @@ class StartJourneyView(RetrieveUpdateAPIView):
         journey.started_at = datetime.now()
         journey.save()
         serializer.save(status=journey.status, started_at=journey.started_at)
-        # players = journey.players
-        # num_array = []
-        # for id_char in players:
-        #     char = Character.objects.get(pk=id_char)
-        #     num = char.creator.phone
-        #     num_array.add(num)
+        players = Character.objects.filter(journey = journey)
+        num_array = []
+        for char in players:
+            num = char.creator.phone
+            num_array.append(num)
 
-        # # integrate(num_array)
+        integrate(num_array)
 
 class EndJourneyView(RetrieveUpdateAPIView):
     permission_classes = [MasterAndOwnerPermissions]
