@@ -5,10 +5,9 @@ from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
 
 from .models import Item
-from bonus.models import Bonus
 from systems.models import System
 
-from .serializers import ItemPostSerializer, ItemGetSerializer
+from .serializers import ApplyBonusSerializer, RemoveBonusSerializer, ItemPostSerializer, ItemGetSerializer
 
 from trinity_dice.permissions import MasterPermissions
 from utils.mixins import SerializerByMethodMixin
@@ -41,23 +40,18 @@ class RetrieveDestroyItemsView(RetrieveDestroyAPIView):
 
 class ApplyBonusView(UpdateAPIView):
     queryset = Item.objects.all()
-    serializer_class = ItemPostSerializer
+    serializer_class = ApplyBonusSerializer
 
-    def perform_update(self, serializer):
-        bonus_id = self.kwargs["bonus_id"]
-        bonus = get_object_or_404(Bonus, pk=bonus_id)
-        serializer.save(bonus=bonus)
+    def get_serializer_context(self):
+        context = super(ApplyBonusView, self).get_serializer_context()
+        context.update({"bonus_id": self.kwargs["bonus_id"]})
+        return context    
 
 class RemoveBonusView(UpdateAPIView):
     queryset = Item.objects.all()
-    serializer_class = ItemPostSerializer
+    serializer_class = RemoveBonusSerializer
 
-    def perform_update(self, serializer):
-        bonus_id = self.kwargs["bonus_id"]
-        item_id = self.kwargs["item_id"]
-        item = Item.objects.get(pk=item_id)
-        bonus = Bonus.objects.get(pk=bonus_id)
-        item.bonus.remove(bonus)
-
-        serializer.validated_data.get('bonus').remove(bonus)
-        serializer.save()
+    def get_serializer_context(self):
+        context = super(RemoveBonusView, self).get_serializer_context()
+        context.update({"bonus_id": self.kwargs["bonus_id"]})
+        return context  
