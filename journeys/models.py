@@ -1,4 +1,6 @@
+from pyexpat import model
 from django.db import models
+import uuid
 
 class StatusOptions(models.TextChoices):
     CR = ('created',)
@@ -6,6 +8,7 @@ class StatusOptions(models.TextChoices):
     FS = ('finished',)
 
 class Journey(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=50)
     description = models.TextField(max_length=255)
     min_level = models.IntegerField()
