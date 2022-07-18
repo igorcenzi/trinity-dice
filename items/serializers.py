@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
-from django.http import Http404
 
-
+from bonus.serializers import BonusSerializer
+from bonus.models import Bonus
 from .models import Item
 from classes.models import Class
 
@@ -44,3 +44,40 @@ class ItemGetSerializer(serializers.ModelSerializer):
         model = Item
         fields = '__all__'
 
+class ApplyBonusSerializer(serializers.ModelSerializer):
+    bonus = BonusSerializer(many=True)
+    classes = ItemClassSerializer(many=True)
+
+    class Meta:
+        model = Item
+        fields = '__all__'
+        read_only_fields = ['id', 'characters', 'bonus']
+        extra_kwargs = {
+            'precision': { 'min_value': 0, 'max_value': 20 },
+            'min_level': { 'min_value': 0 }
+        }
+
+    def update(self, instance, validated_data):
+        bonus_id = self.context["bonus_id"]
+        bonus = get_object_or_404(Bonus, pk=bonus_id)
+        instance.bonus.add(bonus)
+        return super().update(instance, validated_data)
+
+class RemoveBonusSerializer(serializers.ModelSerializer):
+    bonus = BonusSerializer(many=True)
+    classes = ItemClassSerializer(many=True)
+
+    class Meta:
+        model = Item
+        fields = '__all__'
+        read_only_fields = ['id', 'characters', 'bonus']
+        extra_kwargs = {
+            'precision': { 'min_value': 0, 'max_value': 20 },
+            'min_level': { 'min_value': 0 }
+        }
+    
+    def update(self, instance, validated_data):
+        bonus_id = self.context["bonus_id"]
+        bonus = get_object_or_404(Bonus, pk=bonus_id)
+        instance.bonus.remove(bonus)
+        return super().update(instance, validated_data)
