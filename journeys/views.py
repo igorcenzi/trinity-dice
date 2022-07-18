@@ -1,26 +1,21 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView, RetrieveDestroyAPIView, RetrieveAPIView
-import characters
 from characters.models import Character
 from journeys.exceptions import CharacterAdd, JourneyEndedError
 from journeys.mixins import SerializerByMethodMixin
-from journeys.serializers import CreateSerializer, ListCharactersSerializer, ListSerializer, UpdateEndedSerializer, UpdateStartedSerializer
+from journeys.serializers import ListCreateJourneySerializer, ListCharactersSerializer, UpdateEndedSerializer, UpdateStartedSerializer
 from systems.models import System
-from rest_framework.views import Response, status
 from trinity_dice.permissions import MasterAndOwnerPermissions, MasterPermissions
 from .models import Journey
 from datetime import datetime
-from integrations.executor import integrate
+# from integrations.executor import integrate
 
-class ListCreateJourneyView(SerializerByMethodMixin, ListCreateAPIView):
+class ListCreateJourneyView(ListCreateAPIView):
     permission_classes = [MasterPermissions]
     queryset = Journey.objects.all()
     lookup_field = 'pk'
     lookup_url_kwarg = "system_id"
-    serializer_map = {
-        'GET': ListSerializer,
-        'POST': CreateSerializer,
-    }
+    serializer_class = ListCreateJourneySerializer
 
     def perform_create(self, serializer):
         system = get_object_or_404(System, pk=self.kwargs["system_id"])
@@ -68,13 +63,13 @@ class UpdateEndedJourneyView(RetrieveUpdateAPIView):
 class RetrieveAndDeleteJourneyView(RetrieveDestroyAPIView):
     permission_classes = [MasterAndOwnerPermissions]
     queryset=Journey.objects.all()
-    serializer_class = CreateSerializer
+    serializer_class = ListCreateJourneySerializer
     lookup_field = 'pk'
     lookup_url_kwarg = "journey_id"
 
 class RetrieveAndUpdateAddJourneyCharactersView(RetrieveUpdateAPIView):
     permission_classes = [MasterAndOwnerPermissions]
-    serializer_class = CreateSerializer
+    serializer_class = ListCreateJourneySerializer
     queryset=Journey.objects.all()
     lookup_field = 'pk'
     lookup_url_kwarg = "journey_id"
