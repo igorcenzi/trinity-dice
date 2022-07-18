@@ -14,8 +14,6 @@ class JourneyTitleSerializer(serializers.ModelSerializer):
         model = Journey
         fields = ["title"]
 
-
-
 class CharacterListCreateSerializer(serializers.ModelSerializer):
     journey = JourneyTitleSerializer(read_only=True)
 
