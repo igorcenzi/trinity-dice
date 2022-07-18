@@ -8,7 +8,6 @@ from .models import Item
 from bonus.models import Bonus
 from systems.models import System
 
-from bonus.serializers import BonusSerializer
 from .serializers import ItemPostSerializer, ItemGetSerializer
 
 from trinity_dice.permissions import MasterPermissions
