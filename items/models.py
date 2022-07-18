@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 
 class ItemType(models.TextChoices):
@@ -12,6 +13,7 @@ class ItemRarity(models.TextChoices):
     RARE = ("Rare")
 
 class Item(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     name = models.CharField(max_length=50)
     description = models.TextField()
     type = models.CharField(
