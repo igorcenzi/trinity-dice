@@ -15,7 +15,6 @@ class JourneyTitleSerializer(serializers.ModelSerializer):
 class AlterStatusSerializer(serializers.ModelSerializer):
     journey = JourneyTitleSerializer(read_only=True)
 
-    # personalizar o update para retornar uma mensagem personalizada, i.e "detail": "{character.name} is dead!"
     class Meta:
         model = Character
         fields = ["name", "status"]
@@ -142,7 +141,6 @@ class CharacterListCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data: dict):
         class_data = validated_data.pop("char_class")
-        # class será criado pelo POST em systems, só será necessário verificar se get_object_or_404
         class_obj, _ = Class.objects.get_or_create(name=class_data)
         return Character.objects.create(**validated_data, class_name=class_obj)
 
