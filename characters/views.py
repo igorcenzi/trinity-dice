@@ -1,13 +1,16 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
+from rest_framework import status
 
 from .mixins import AddItemToInventoryMixin
 from items.models import Item
+from items.serializers import ItemGetSerializer
 from .serializers import CharacterListCreateSerializer, AlterStatusSerializer, UpdateCharSerializer, UpgradeCharSerializer, ExperienceSerializer, AddItemToInventorySerializer
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView, ListAPIView, DestroyAPIView
 from .models import Character
 from users.models import User
-from trinity_dice.permissions import IsCharOwnerOrReadOnlyPermissions, MasterPermissions
+from trinity_dice.permissions import IsCharOwnerOrReadOnlyPermissions, MasterPermissions, UserOrMasterPermissions
 from utils.mixins import SerializerByMethodMixin
 
 class ListCreateCharView(ListCreateAPIView):
@@ -77,3 +80,30 @@ class AddNewItemToInventoryView(AddItemToInventoryMixin, UpdateAPIView):
         item = Item.objects.get(id=self.kwargs['item_id'])
         item.characters.add(character)
         item.save()
+        
+class ListItemsByCharacter(ListAPIView):
+    queryset = Item.objects.all()
+    serializer_class = ItemGetSerializer
+    permission_classes = [UserOrMasterPermissions]
+    lookup_url_kwarg = 'char_id'
+    lookup_field = 'characters'
+    
+    def get_queryset(self):
+        return Item.objects.filter(characters=self.kwargs['char_id'])
+    
+class DeleteItemFromCharacters(DestroyAPIView):
+    queryset = Item.objects.all()
+    serializer_class = ItemGetSerializer
+    # permission_classes = [UserOrMasterPermissions]
+    lookup_url_kwarg = 'item_id'
+    lookup_field = 'pk'
+    
+    def destroy(self, request, *args, **kwargs):
+        print('teste')
+        item = Item.objects.get(pk=self.kwargs['item_id'])
+        char = Character.objects.get(pk=self.kwargs['char_id'])
+        print(item, char)
+        item.characters.remove(char)
+        item.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
