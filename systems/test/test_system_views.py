@@ -21,31 +21,60 @@ class AdminSystemViewTest(APITestCase):
             is_master=cls.master_is_master,
         )
 
-        cls.system_request_body = {    
+        cls.username = "Jorginho"
+        cls.email = "jorginho_joga_10@gmail.com"
+        cls.password = "123@456"
+        cls.phone = "+55212345678"
+        cls.is_master = False
+
+        cls.user = User.objects.create_user(
+            username=cls.username,
+            email=cls.email,
+            password=cls.password,
+            phone=cls.phone,
+            is_master=cls.is_master,
+        )
+
+        cls.system_request_body = {
             "name": "Dungeons & Dragons",
             "dice": 20,
             "version": 3.5,
             "classes": [
-                { "name": "Warrior" },
-                { "name": "Ranger" },
-                { "name": "Archer" },
-                { "name": "Mage" }
+                {"name": "Warrior"},
+                {"name": "Ranger"},
+                {"name": "Archer"},
+                {"name": "Mage"}
             ]
         }
 
+        cls.system_id = ''
+        cls.player_token = ''
 
     def setUp(self):
-        response = self.client.post(
+        master_login = self.client.post(
             "/login/",
-            { "email": self.master_email, "password": self.master_password },
+            {"email": self.master_email, "password": self.master_password},
+        ).json()
+        player_login = self.client.post(
+            "/login/",
+            {"email": self.email, "password": self.password},
         ).json()
 
-        self.assertTrue(response["access"])
-        self.client.credentials(
-            HTTP_AUTHORIZATION=f"Bearer {response['access']}"
-        )
+        self.assertTrue(master_login["access"])
+        self.assertTrue(player_login["access"])
 
-    def test_should_create_system(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"Bearer {master_login['access']}"
+        )
+        self.player_token = player_login["access"]
+
+        response = self.client.post(
+            "/systems/", self.system_request_body, format="json")
+
+        self.assertTrue(response.status_code, status.HTTP_201_CREATED)
+        self.system_id = response.data['id']
+
+    def test_master_should_create_system(self):
         system_request = self.system_request_body
         response = self.client.post(
             "/systems/", system_request, format="json")
@@ -61,15 +90,24 @@ class AdminSystemViewTest(APITestCase):
         self.assertTrue("is_active" in response.data)
         self.assertTrue("created_at" in response.data)
 
-    def test_should_create_empty_system(self):
+    def test_master_should_not_create_empty_system(self):
         response = self.client.post("/systems/", {}, format="json")
 
         self.assertTrue(response.status_code, status.HTTP_400_BAD_REQUEST)
         for field in ["name", "dice", "version", "classes"]:
             self.assertTrue(response.data[field], "This field is required.")
 
-    def test_should_list_all_systems(self):
-        for _ in range(1,6):
+    def test_player_should_not_create_system(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"Bearer {self.player_token}")
+
+        response = self.client.post(
+            "/systems/", self.system_request_body, format="json")
+
+        self.assertTrue(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_master_should_list_all_systems(self):
+        for _ in range(1, 6):
             response = self.client.post(
                 "/systems/", self.system_request_body, format="json")
             self.assertTrue(response.status_code, status.HTTP_201_CREATED)
@@ -80,15 +118,10 @@ class AdminSystemViewTest(APITestCase):
         self.assertTrue("next" in response.data)
         self.assertTrue("previous" in response.data)
         self.assertTrue("results" in response.data)
-        self.assertTrue(len(response.data["results"]), 5)
+        self.assertTrue(len(response.data["results"]), 6)
 
-    def test_should_list_specific_system(self):
-        response_post = self.client.post(
-            "/systems/", self.system_request_body, format="json")
-        self.assertTrue(response_post.status_code, status.HTTP_201_CREATED)
-
-        system_id = response_post.data["id"]
-        response = self.client.get(f"/systems/{system_id}/")
+    def test_master_should_list_specific_system(self):
+        response = self.client.get(f"/systems/{self.system_id}/")
 
         self.assertTrue(response.status_code, status.HTTP_200_OK)
         self.assertTrue("id" in response.data)
@@ -101,24 +134,40 @@ class AdminSystemViewTest(APITestCase):
         self.assertTrue("is_active" in response.data)
         self.assertTrue("created_at" in response.data)
 
-    def test_should_not_list_invalid_system_id(self):
+    def test_master_should_not_list_invalid_system_id(self):
         response = self.client.get("/systems/1/")
         self.assertTrue(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_should_deactivate_system(self):
-        response_post = self.client.post(
-            "/systems/", self.system_request_body, format="json")
-        self.assertTrue(response_post.status_code, status.HTTP_201_CREATED)
+    def test_player_should_list_all_systems(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"Bearer {self.player_token}")
 
-        system_id = response_post.data["id"]
-        response = self.client.delete(f"/systems/{system_id}/")
+        response = self.client.get("/systems/")
+        self.assertTrue(response.status_code, status.HTTP_200_OK)
+        self.assertTrue("results" in response.data)
+        self.assertTrue(len(response.data["results"]), 1)
 
+    def test_player_should_list_specific_system(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"Bearer {self.player_token}")
+
+        response = self.client.get(f"/systems/{self.system_id}/")
+        self.assertTrue(response.status_code, status.HTTP_200_OK)
+        self.assertTrue("id" in response.data)
+
+    def test_master_should_deactivate_system(self):
+        response = self.client.delete(f"/systems/{self.system_id}/")
         self.assertTrue(response.status_code, status.HTTP_200_OK)
         self.assertTrue(response.data['detail'], 'System deactivated!')
 
-    def test_should_not_deactivate_invalid_system_id(self):
-        response = self.client.delete(f"/systems/1/")
-
+    def test_master_should_not_deactivate_invalid_system_id(self):
+        response = self.client.delete("/systems/1/")
         self.assertTrue(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertTrue(response.data['detail'], 'System not found!')
 
+    def test_player_should_not_deactivate_system(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"Bearer {self.player_token}")
+
+        response = self.client.delete(f"/systems/{self.system_id}/")
+        self.assertTrue(response.status_code, status.HTTP_403_FORBIDDEN)
