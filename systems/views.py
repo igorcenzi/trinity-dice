@@ -9,7 +9,7 @@ from .models import System
 
 
 class ListCreateSystemView(ListCreateAPIView):
-    queryset = System.objects.all()
+    queryset = System.objects.all().order_by('created_at')
     serializer_class = SystemSerializer
 
     permission_classes = [MasterPermissions]
