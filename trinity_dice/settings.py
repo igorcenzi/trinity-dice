@@ -21,7 +21,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['trinity-dice-api.herokuapp.com', 'localhost']
+ALLOWED_HOSTS = ['trinity-dice-api.herokuapp.com', 'localhost', '0.0.0.0']
 
 # Application definition
 
@@ -78,29 +78,29 @@ WSGI_APPLICATION = "trinity_dice.wsgi.application"
 
 
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": os.getenv("POSTGRES_DB"),
-#         "USER": os.getenv("POSTGRES_USER"),
-#         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-#         "HOST": "db",
-#         "PORT": 5432,
-#     }
-# }
-
-# LOCAL POSTGRES CONFIG
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("POSTGRES_DB"),
         "USER": os.getenv("POSTGRES_USER"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-        "HOST": "localhost",
+        "HOST": os.getenv("POSTGRES_HOST"),
         "PORT": 5432,
     }
 }
+
+# LOCAL POSTGRES CONFIG
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": os.getenv("POSTGRES_DB"),
+#         "USER": os.getenv("POSTGRES_USER"),
+#         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+#         "HOST": "localhost",
+#         "PORT": 5432,
+#     }
+# }
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 

@@ -4,6 +4,8 @@ services:
   db:
     image: postgres:latest
     env_file: .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     ports:
       - 45432:5432
 
@@ -12,11 +14,11 @@ services:
     env_file: .env
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; python manage.py migrate'
     volumes:
-      - .:/code
+      - .:/app
     depends_on:
       - db
 
-  api:
+  web:
     build: .
     env_file: .env
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; python manage.py runserver 0.0.0.0:8000'
@@ -30,3 +32,5 @@ services:
     depends_on:
       - db
       - migration
+volumes:
+  pgdata:
