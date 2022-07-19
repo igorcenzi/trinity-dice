@@ -21,7 +21,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['api-trinity-dice.herokuapp.com', 'localhost', '0.0.0.0']
+ALLOWED_HOSTS = ['api-trinity-dice.herokuapp.com', 'localhost']
 
 # Application definition
 
@@ -78,16 +78,16 @@ WSGI_APPLICATION = "trinity_dice.wsgi.application"
 
 
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB"),
-        "USER": os.getenv("POSTGRES_USER"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-        "HOST": os.getenv("POSTGRES_HOST"),
-        "PORT": 5432,
-    }
-}
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": os.getenv("POSTGRES_DB"),
+#         "USER": os.getenv("POSTGRES_USER"),
+#         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+#         "HOST": os.getenv("POSTGRES_HOST"),
+#         "PORT": 5432,
+#     }
+# }
 
 # LOCAL POSTGRES CONFIG
 
@@ -102,13 +102,19 @@ DATABASES = {
 #     }
 # }
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
+DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3"
+        }
+    }
+# DATABASE_URL = os.environ.get("DATABASE_URL")
 
-if DATABASE_URL:
-    db_from_env = dj_database_url.config(
-        default=DATABASE_URL, conn_max_age=500, ssl_require=True
-    )
-    DATABASES["default"].update(db_from_env)
+# if DATABASE_URL:
+#     db_from_env = dj_database_url.config(
+#         default=DATABASE_URL, conn_max_age=500, ssl_require=True
+#     )
+#     DATABASES["default"].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
