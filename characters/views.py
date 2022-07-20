@@ -1,53 +1,73 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
-from rest_framework import status
 
-from .mixins import AddItemToInventoryMixin
+from .mixins import AddItemToInventoryMixin, RemoveItemFromInventoryMixin
 from items.models import Item
 from items.serializers import ItemGetSerializer
-from .serializers import CharacterListCreateSerializer, AlterStatusSerializer, UpdateCharSerializer, UpgradeCharSerializer, ExperienceSerializer, AddItemToInventorySerializer
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView, ListAPIView, DestroyAPIView
+from .serializers import (
+    CharacterListCreateSerializer,
+    AlterStatusSerializer,
+    UpdateCharSerializer,
+    UpgradeCharSerializer,
+    ExperienceSerializer,
+    AddRemoveItemToInventorySerializer,
+)
+from rest_framework.generics import (
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+    UpdateAPIView,
+    ListAPIView,
+)
+
 from .models import Character
 from users.models import User
-from trinity_dice.permissions import IsCharOwnerOrReadOnlyPermissions, MasterPermissions, UserOrMasterPermissions
+from trinity_dice.permissions import (
+    IsCharOwnerOrReadOnlyPermissions,
+    MasterPermissions,
+    UserOrMasterPermissions,
+)
 from utils.mixins import SerializerByMethodMixin
+
 
 class ListCreateCharView(ListCreateAPIView):
     queryset = Character.objects.filter()
     serializer_class = CharacterListCreateSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    
+
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
-    
+
     def get_queryset(self):
         owner = get_object_or_404(User, email=self.request.user)
         return Character.objects.filter(creator=owner)
 
+
 class CharDetailsView(SerializerByMethodMixin, RetrieveUpdateDestroyAPIView):
     queryset = Character.objects.all()
     serializer_map = {
-        'PATCH': UpdateCharSerializer,
-        'GET': CharacterListCreateSerializer
+        "PATCH": UpdateCharSerializer,
+        "GET": CharacterListCreateSerializer,
     }
     permission_classes = [IsCharOwnerOrReadOnlyPermissions]
+
 
 class AlterStatusView(UpdateAPIView):
     queryset = Character.objects.all()
     serializer_class = AlterStatusSerializer
-    permission_classes = [MasterPermissions]    
+    permission_classes = [MasterPermissions]
+
 
 class UpgradeCharView(UpdateAPIView):
     queryset = Character.objects.all()
     serializer_class = UpgradeCharSerializer
     permission_classes = [MasterPermissions]
 
-class GainExpView(UpdateAPIView): 
+
+class GainExpView(UpdateAPIView):
     queryset = Character.objects.all()
     serializer_class = ExperienceSerializer
     permission_classes = [MasterPermissions]
-    
+
     def perform_update(self, serializer):
         amount_exp = serializer.validated_data["gained_exp"]
         char_id = self.kwargs["pk"]
@@ -63,7 +83,12 @@ class GainExpView(UpdateAPIView):
             current_level += 1
             new_exp = 0
             points += 1
-            serializer.save(exp_points=new_exp, max_exp_points=max_exp, level=current_level, level_up_points=points)
+            serializer.save(
+                exp_points=new_exp,
+                max_exp_points=max_exp,
+                level=current_level,
+                level_up_points=points,
+            )
 
         else:
             serializer.save(exp_points=new_exp)
@@ -71,39 +96,36 @@ class GainExpView(UpdateAPIView):
 
 class AddNewItemToInventoryView(AddItemToInventoryMixin, UpdateAPIView):
     queryset = Character.objects.all()
-    serializer_class = AddItemToInventorySerializer
+    serializer_class = AddRemoveItemToInventorySerializer
     permission_classes = [MasterPermissions]
-    lookup_url_kwarg = 'char_id'
-    
+    lookup_url_kwarg = "char_id"
+
     def perform_update(self, serializer):
-        character = Character.objects.get(id=self.kwargs['char_id'])
-        item = Item.objects.get(id=self.kwargs['item_id'])
+        character = Character.objects.get(id=self.kwargs["char_id"])
+        item = Item.objects.get(id=self.kwargs["item_id"])
         item.characters.add(character)
         item.save()
-        
+
+
 class ListItemsByCharacter(ListAPIView):
     queryset = Item.objects.all()
     serializer_class = ItemGetSerializer
     permission_classes = [UserOrMasterPermissions]
-    lookup_url_kwarg = 'char_id'
-    lookup_field = 'characters'
-    
+    lookup_url_kwarg = "char_id"
+    lookup_field = "characters"
+
     def get_queryset(self):
-        return Item.objects.filter(characters=self.kwargs['char_id'])
-    
-class DeleteItemFromCharacters(DestroyAPIView):
+        return Item.objects.filter(characters=self.kwargs["char_id"])
+
+
+class DeleteItemFromCharacters(RemoveItemFromInventoryMixin, UpdateAPIView):
     queryset = Item.objects.all()
     serializer_class = ItemGetSerializer
-    # permission_classes = [UserOrMasterPermissions]
-    lookup_url_kwarg = 'item_id'
-    lookup_field = 'pk'
-    
-    def destroy(self, request, *args, **kwargs):
-        print('teste')
-        item = Item.objects.get(pk=self.kwargs['item_id'])
-        char = Character.objects.get(pk=self.kwargs['char_id'])
-        print(item, char)
-        item.characters.remove(char)
+    permission_classes = [MasterPermissions]
+    lookup_url_kwarg = "char_id"
+
+    def perform_update(self, serializer):
+        character = Character.objects.get(id=self.kwargs["char_id"])
+        item = Item.objects.get(id=self.kwargs["item_id"])
+        item.characters.remove(character)
         item.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
