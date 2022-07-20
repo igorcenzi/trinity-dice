@@ -21,8 +21,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["trinity-dice.herokuapp.com", "localhost"]
-
+ALLOWED_HOSTS = ['api-trinity-dice.herokuapp.com', 'localhost']
 
 # Application definition
 
@@ -158,6 +157,7 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    'PAGE_SIZE': 5
 }
 
 SIMPLE_JWT = {
