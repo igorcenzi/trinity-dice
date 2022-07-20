@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.test import TestCase
 
 from systems.models import System
@@ -35,3 +36,17 @@ class TestSystemModel(TestCase):
         self.assertTrue(hasattr(self.system, "is_active"))
         self.assertTrue(hasattr(self.system, "classes"))
         self.assertTrue(hasattr(self.system, "created_at"))
+
+    def test_should_not_create_without_dice(self):
+        with self.assertRaises(IntegrityError):
+            System.objects.create(
+                name=self.system_name,
+                version=self.system_version,
+            )
+
+    def test_should_not_create_without_version(self):
+        with self.assertRaises(IntegrityError):
+            System.objects.create(
+                name=self.system_name,
+                dice=self.system_dice,
+            )
