@@ -109,6 +109,7 @@ class CharacterListCreateSerializer(serializers.ModelSerializer):
     class_name = serializers.SerializerMethodField(read_only=True)
 
     items = ItemGetSerializer(many=True, read_only=True)
+
     class Meta:
         model = Character
         fields = [
@@ -135,9 +136,15 @@ class CharacterListCreateSerializer(serializers.ModelSerializer):
             "class_name",
             "journey",
             "creator_id",
-            "items"
+            "items",
         ]
-        read_only_fields = ["exp_points", "max_exp_points", "level_up_points", "level", "items"]
+        read_only_fields = [
+            "exp_points",
+            "max_exp_points",
+            "level_up_points",
+            "level",
+            "items",
+        ]
 
     def create(self, validated_data: dict):
         class_data = validated_data.pop("char_class")
@@ -149,17 +156,11 @@ class CharacterListCreateSerializer(serializers.ModelSerializer):
         classes = Class.objects.get(pk=id)
         return classes.name
 
-class AddItemToInventorySerializer(serializers.ModelSerializer):
-    journey = JourneyTitleSerializer(read_only=True)
 
-    # char_class = Class()
-
-    # class_name = Class()
-
-    items = ItemGetSerializer(read_only=True)
+class AddRemoveItemToInventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Character
-        fields = '__all__'
+        fields = "__all__"
         read_only_fields = [
             "id",
             "name",
@@ -184,5 +185,5 @@ class AddItemToInventorySerializer(serializers.ModelSerializer):
             "class_name",
             "journey",
             "creator_id",
-            "items"
+            "items",
         ]
