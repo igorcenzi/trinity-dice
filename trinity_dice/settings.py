@@ -21,8 +21,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["trinity-dice.herokuapp.com", "localhost"]
-
+ALLOWED_HOSTS = ['api-trinity-dice.herokuapp.com', 'localhost']
 
 # Application definition
 
@@ -76,7 +75,6 @@ WSGI_APPLICATION = "trinity_dice.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
 
 
 # DATABASES = {
